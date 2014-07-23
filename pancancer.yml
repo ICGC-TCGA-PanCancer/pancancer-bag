@@ -2,12 +2,13 @@
 # file: pancancer.yml
 # A pan-cancer cluster is basically a SeqWare cluster with some additions
 # to support various workflows
-- include: ../seqware-bag/seqware-install.yml
+# - include: ../seqware-bag/seqware-install.yml
 
 - hosts: all
   sudo: True
   roles: 
     - { role: workflow-dependencies }
+    - { role: genetorrent }
 
 - hosts: master 
   sudo: True

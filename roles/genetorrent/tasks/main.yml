@@ -1,0 +1,45 @@
+---
+# file: roles/genetorrent/tasks/main.yml
+
+- name: Download cghub key 
+  get_url: url=https://cghub.ucsc.edu/software/downloads/cghub_public.key dest=~ubuntu owner=ubuntu
+
+- name:  Add genetorrent repository 
+  apt_repository: repo='deb http://cz.archive.ubuntu.com/ubuntu precise main universe' state=present
+     
+- name: install genetorrent dependencies
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - libboost-filesystem1.48.0 
+    - libboost-program-options1.48.0 
+    - libboost-regex1.48.0 
+    - libboost-system1.48.0
+    - libicu48 
+    - libxerces-c3.1 
+    - libxqilla6
+
+- name: download genetorrent
+  get_url: url={{ item }} dest=~ubuntu
+  with_items:
+    - http://cghub.ucsc.edu/software/downloads/GeneTorrent/3.8.5/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb
+    - http://cghub.ucsc.edu/software/downloads/GeneTorrent/3.8.5/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb
+    - http://cghub.ucsc.edu/software/downloads/GeneTorrent/3.8.5/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb
+
+# use this instead of the following when this issue is fixed 
+# https://github.com/ansible/ansible/issues/7863
+#- name: install genetorrent
+#  apt: deb={{ item }} state=installed
+#  with_items:
+#    - /home/ubuntu/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb
+#    - /home/ubuntu/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb
+#    - /home/ubuntu/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb
+
+- name: install genetorrent-common
+  apt: deb=/home/ubuntu/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+ 
+- name: install genetorrent-upload
+  apt: deb=/home/ubuntu/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+  
+- name: install genetorrent-download
+  apt: deb=/home/ubuntu/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+
