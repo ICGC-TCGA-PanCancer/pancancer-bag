@@ -2,7 +2,12 @@
 # file: pancancer.yml
 # A pan-cancer cluster is basically a SeqWare cluster with some additions
 # to support various workflows
-# - include: ../seqware-bag/seqware-install.yml
+
+# if required, here is where we would port the workaround for Bionimbus and Toyko's cloud in ubuntu_12.04_minimal script
+# however, it looks like that might be redundant due to setup_volumes.pl
+
+# do generic SeqWare setup
+- include: ../seqware-bag/seqware-install.yml
 
 - hosts: all
   sudo: True
