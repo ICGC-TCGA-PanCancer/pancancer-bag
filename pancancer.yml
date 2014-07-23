@@ -8,3 +8,8 @@
   sudo: True
   roles: 
     - { role: workflow-dependencies }
+
+- hosts: master 
+  sudo: True
+  roles: 
+    - { role: workflow-bwa }
