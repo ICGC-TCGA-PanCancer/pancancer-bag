@@ -28,16 +28,18 @@
 
 - name: Download bwa workflow 
   get_url: url=http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ bundle_prefix }}.zip dest=~seqware/released-bundles/ owner=seqware
-  when: "'{{ bundle_prefix }}' not in provisioned_bundles.stdout" 
+  when: "'{{ bundle_prefix }}' not in provisioned_bundles.stdout"
+  register: bwa_downloaded
      
   # note: zip may already have been cleaned up, this is why we're ignoring errors
 - name: Setup bwa permissions
   file: path=~seqware/released-bundles/{{ bundle_prefix }}.zip owner=seqware group=seqware
-  ignore_errors: yes
+  when: bwa_downloaded.changed
 
 - name : Install bwa bundle 
   sudo_user: seqware
   shell: ~seqware/bin/seqware bundle install --zip ~seqware/released-bundles/{{ bundle_prefix }}.zip
+  when: bwa_downloaded.changed
   args: 
     creates: ~seqware/provisioned-bundles/{{ bundle_prefix }}/  
     
