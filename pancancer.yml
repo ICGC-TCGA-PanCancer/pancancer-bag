@@ -18,4 +18,4 @@
 - hosts: master 
   sudo: True
   roles: 
-    - { role: workflow-bwa }
+    - { role: workflow-bwa, when: install_bwa is defined }
