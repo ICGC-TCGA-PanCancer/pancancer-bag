@@ -14,6 +14,7 @@
   roles: 
     - { role: workflow-dependencies }
     - { role: genetorrent }
+    - { role: workflow-bwa-dependencies }
 
 - hosts: master 
   sudo: True

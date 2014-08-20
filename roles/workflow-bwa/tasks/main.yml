@@ -1,26 +1,6 @@
 ---
 # file: roles/seqware-bwa/tasks/main.yml
 
-- name: install bwa workflow dependencies
-  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
-  with_items:
-    - liblz-dev 
-    - zlib1g-dev 
-    - libxml-dom-perl 
-    - samtools 
-    - libossp-uuid-perl 
-    - libjson-perl 
-    - libxml-libxml-perl 
-    - libtry-tiny-perl 
-    - libgd2-noxpm 
-    - g++ 
-    - dh-autoreconf 
-    - libncurses-dev 
-    - pkg-config 
-    - libgd2-noxpm-dev 
-    - libgd2-noxpm 
-    - libxml-xpath-perl 
-
 - name: Detect bwa install
   command: ls ~seqware/provisioned-bundles
   register: provisioned_bundles
