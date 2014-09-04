@@ -6,7 +6,12 @@
   register: provisioned_bundles
   changed_when: false
 
+  # note we need to override the temporary working directory because this bundle is just too big
+  # need to use absolute paths, go figure
 - name: Download bwa workflow 
+  sudo_user: seqware
+  environment:
+    TMPDIR: /mnt/home/seqware
   get_url: url=http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ bundle_prefix }}.zip dest=~seqware/released-bundles/ owner=seqware
   when: "'{{ bundle_prefix }}' not in provisioned_bundles.stdout"
   register: bwa_downloaded
