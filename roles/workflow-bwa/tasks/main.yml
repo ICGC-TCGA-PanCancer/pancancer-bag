@@ -12,7 +12,7 @@
   sudo_user: seqware
   environment:
     TMPDIR: /mnt/home/seqware
-  command: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ bundle_prefix }}.zip
+  shell: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ bundle_prefix }}.zip
   args:
     chdir: ~seqware/released-bundles/
     creates: ~seqware/released-bundles/{{ bundle_prefix }}.zip
