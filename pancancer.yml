@@ -14,7 +14,8 @@
   roles: 
     - { role: workflow-dependencies }
     - { role: genetorrent }
-    - { role: workflow-bwa-dependencies }
+    - { role: workflow-bwa-dependencies, sge_hack: "True" }
+    - { role: swap-enabled, when: ansible_swaptotal_mb < 9000 }
 
 - hosts: master 
   sudo: True
