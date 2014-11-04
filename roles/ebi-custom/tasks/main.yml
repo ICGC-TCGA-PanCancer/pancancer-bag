@@ -1,0 +1,18 @@
+---
+# file: roles/ebi-custom/tasks/main.yml
+
+- name: Add proper permissions to the "/mnt/datastore" directory
+  file: path=/mnt/datastore state=directory owner=seqware group=root mode=0777
+
+- name: Add proper permissions to the "/mnt/seqware-oozie" directory
+  file: path=/mnt/seqware-oozie state=directory owner=seqware group=root mode=0755
+
+- name: Template over SGE h_vmem changes
+  template: src=master.ini.j2 dest=/tmp/master.ini
+  notify: apply qconf h_vmem changes
+  when: sge_hack
+
+- name: Copy over complex config needed qconf
+  copy: src=complex dest=/tmp/complex mode=0644
+  notify: apply qconf complex changes
+  when: sge_hack

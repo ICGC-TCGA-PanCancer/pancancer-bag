@@ -1,3 +1,2 @@
 ---
-# 57543625497 = 58 GB, this will change the SGE host config to use up to 58 GB of memory
-h_vmem: 57543625497
+user_name: "seqware"
