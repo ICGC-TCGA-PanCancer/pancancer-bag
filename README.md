@@ -49,9 +49,4 @@ more information about this project.
 
 
 !!! Important !!!
-If running this on EBI or other cloud where large memory instances are not available, enable the "SGE hack" as below:
-
-- { role: workflow-bwa-dependencies, sge_hack: "True" }
-
-
-
+If running this on EBI or other cloud where large memory instances are not available, enable the "SGE hack" by passing sge_hack and swap_on as variables on the command line.

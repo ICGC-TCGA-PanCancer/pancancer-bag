@@ -11,11 +11,16 @@
 
 - hosts: all
   sudo: True
+  vars:
+   swap_on: "False"
+   sge_hack: "False"
   roles: 
     - { role: workflow-dependencies }
     - { role: genetorrent }
-    - { role: workflow-bwa-dependencies, sge_hack: "True" }
-    - { role: swap-enabled, when: ansible_swaptotal_mb < 9000 }
+    - { role: workflow-bwa-dependencies }
+
+# 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.
+    - { role: swap-enabled, when: swap_on and ansible_swaptotal_mb < 9000 }
 
 - hosts: master 
   sudo: True
