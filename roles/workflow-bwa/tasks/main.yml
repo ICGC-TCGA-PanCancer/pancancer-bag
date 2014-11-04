@@ -27,7 +27,7 @@
 
 - name : Install bwa bundle 
   sudo_user: "{{ user_name }}"
-  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~seqware/released-bundles/{{ bundle_prefix }}.zip
+  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip
   when: bwa_downloaded.changed
   args: 
     creates: ~{{ user_name }}/provisioned-bundles/{{ bundle_prefix }}/  
