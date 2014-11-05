@@ -7,7 +7,7 @@
   sudo: True
   roles: 
     - { role: workflow-dependencies }
-    - { role: genetorrent }
+    - { role: genetorrent, user_name: seqware }
     - { role: workflow-bwa-dependencies }
 
 - hosts: master 

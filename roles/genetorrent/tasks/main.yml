@@ -2,7 +2,7 @@
 # file: roles/genetorrent/tasks/main.yml
 
 - name: Download cghub key 
-  get_url: url=https://cghub.ucsc.edu/software/downloads/cghub_public.key dest=~ubuntu owner=ubuntu
+  get_url: url=https://cghub.ucsc.edu/software/downloads/cghub_public.key dest=~{{ user_name }} owner={{ user_name }}
 
 - name:  Add genetorrent repository 
   apt_repository: repo='deb http://cz.archive.ubuntu.com/ubuntu precise main universe' state=present
@@ -19,7 +19,7 @@
     - libxqilla6
 
 - name: download genetorrent
-  get_url: url={{ item }} dest=~ubuntu
+  get_url: url={{ item }} dest=~{{ user_name }}
   with_items:
     - http://cghub.ucsc.edu/software/downloads/GeneTorrent/3.8.5/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb
     - http://cghub.ucsc.edu/software/downloads/GeneTorrent/3.8.5/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb
@@ -35,11 +35,11 @@
 #    - /home/ubuntu/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb
 
 - name: install genetorrent-common
-  apt: deb=/home/ubuntu/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+  apt: deb=/home/{{ user_name }}/genetorrent-common_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
  
 - name: install genetorrent-upload
-  apt: deb=/home/ubuntu/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+  apt: deb=/home/{{ user_name }}/genetorrent-upload_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
   
 - name: install genetorrent-download
-  apt: deb=/home/ubuntu/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
+  apt: deb=/home/{{ user_name }}/genetorrent-download_3.8.5-ubuntu2.91-12.04_amd64.deb state=installed
 
