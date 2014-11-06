@@ -7,14 +7,13 @@
 # however, it looks like that might be redundant due to setup_volumes.pl
 
 # do generic SeqWare setup
-- include: ../seqware-bag/seqware-install.yml
-
 - hosts: all
   sudo: True
   vars:
    swap_on: "False"
    sge_hack: "False"
   roles: 
+    - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
     - { role: genetorrent }
     - { role: workflow-bwa-dependencies }
