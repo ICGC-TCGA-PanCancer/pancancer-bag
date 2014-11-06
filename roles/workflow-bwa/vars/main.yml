@@ -4,4 +4,5 @@
 bwa_version: "2.6.3"
 bwa_seqware_version : "1.1.0-alpha.5"
 bundle_prefix: "Workflow_Bundle_BWA_{{ bwa_version }}_SeqWare_{{ bwa_seqware_version }}"
+user_name: "seqware"
 
