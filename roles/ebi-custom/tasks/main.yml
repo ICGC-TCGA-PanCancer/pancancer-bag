@@ -5,7 +5,7 @@
   file: path=/mnt/datastore state=directory owner=seqware group=root mode=0777
 
 - name: Add proper permissions to the "/mnt/seqware-oozie" directory
-  file: path=/mnt/seqware-oozie state=directory owner=seqware group=root mode=0755
+  file: path=/mnt/seqware-oozie state=directory owner=seqware group=root mode=0777
 
 - name: Template over SGE h_vmem changes
   template: src=master.ini.j2 dest=/tmp/master.ini
