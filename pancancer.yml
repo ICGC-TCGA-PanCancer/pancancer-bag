@@ -17,7 +17,7 @@
   roles: 
     - { role: workflow-dependencies }
     - { role: genetorrent }
-    - { role: workflow-bwa-dependencies }
+    - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and workflow_name == 'BWA' ) }
 
 # 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.
     - { role: swap-enabled, when: swap_on and ansible_swaptotal_mb < 9000 }
@@ -25,4 +25,4 @@
 - hosts: master 
   sudo: True
   roles: 
-    - { role: workflow-bwa, when: install_bwa is defined }
+    - { role: workflow, when: install_workflow is defined }

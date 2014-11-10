@@ -1,7 +1,0 @@
----
-# file: roles/workflow-bwa/vars/main.yml
-
-bwa_version: "2.6.1"
-bwa_seqware_version : "1.1.0-alpha.2"
-bundle_prefix: "Workflow_Bundle_BWA_{{ bwa_version }}_SeqWare_{{ bwa_seqware_version }}"
-
