@@ -12,8 +12,8 @@
 - hosts: all
   sudo: True
   vars:
-   swap_on: "False"
-   sge_hack: "False"
+   swap_on: False
+   sge_hack: False
   roles: 
     - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
