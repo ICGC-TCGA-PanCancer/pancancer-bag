@@ -16,6 +16,7 @@
    sge_hack: "False"
   roles: 
     - { role: workflow-dependencies }
+    - { role: mount_device, when: device is defined }
     - { role: genetorrent }
     - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and workflow_name == 'BWA' ) }
 
