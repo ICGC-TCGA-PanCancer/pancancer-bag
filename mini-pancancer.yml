@@ -1,0 +1,16 @@
+---
+# file: mini-pancancer.yml
+# This is a simple script run by itself to install bwa and its dependencies 
+# without assuming anything about hardware
+
+- hosts: all
+  sudo: True
+  roles: 
+    - { role: workflow-dependencies }
+    - { role: genetorrent, user_name: seqware }
+    - { role: workflow-bwa-dependencies }
+
+- hosts: master 
+  sudo: True
+  roles: 
+    - { role: workflow-bwa }
