@@ -1,9 +1,6 @@
 ---
 # file: roles/genetorrent/tasks/main.yml
 
-- name: Download cghub key 
-  get_url: url=https://cghub.ucsc.edu/software/downloads/cghub_public.key dest=~{{ user_name }} owner={{ user_name }}
-
 - name:  Add genetorrent repository 
   apt_repository: repo='deb http://cz.archive.ubuntu.com/ubuntu precise main universe' state=present
      
