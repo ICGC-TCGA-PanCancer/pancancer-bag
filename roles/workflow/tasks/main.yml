@@ -16,7 +16,7 @@
   args:
     chdir: ~{{ user_name }}/released-bundles/
     creates: ~{{ user_name }}/released-bundles/{{ item }}.zip
-  when: "'{{ item }}' not in provisioned_bundles.stdout"
+  when: '"{{ item }}" not in provisioned_bundles.stdout'
   register: workflows_downloaded
   with_items: workflows
      
@@ -31,7 +31,7 @@
   shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ item }}.zip
   when: workflows_downloaded.changed
   args: 
-    creates: ~{{ user_name }}/provisioned-bundles/{{ items }}/  
+    creates: ~{{ user_name }}/provisioned-bundles/{{ item }}/  
   with_items: workflows
     
 - name: Remove workflow bundles
