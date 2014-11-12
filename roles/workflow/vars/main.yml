@@ -1,7 +1,3 @@
 ---
 # file: roles/workflow/vars/main.yml
 
-
-#bundle_prefix: "Workflow_Bundle_{{workflows.value.name}}_{{workflow.value.version }}_SeqWare_{{ seqware_version }}"
-#bundle_prefix: "Workflow_Bundle_{{workflows_name}}_{{workflow_version }}_SeqWare_{{ seqware_version }}"
-
