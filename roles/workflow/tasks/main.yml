@@ -1,62 +1,39 @@
 ---
-# file: roles/workflow/tasks/main.yml
+# file: roles/workflow/tasks/install.yml
 
-<<<<<<< HEAD:roles/workflow/tasks/main.yml
-- name: Detect workflow install
-  command: ls ~seqware/provisioned-bundles
-=======
-- name: Detect bwa install
+- name: Detect workflows installed
   command: ls ~{{ user_name }}/provisioned-bundles
->>>>>>> develop:roles/workflow-bwa/tasks/main.yml
   register: provisioned_bundles
   changed_when: false
 
   # note we need to override the temporary working directory because this bundle is just too big
   # need to use absolute paths, go figure
-<<<<<<< HEAD:roles/workflow/tasks/main.yml
-- name: Download workflow 
-  sudo_user: seqware
-=======
-- name: Download bwa workflow 
+- name: Download workflows
   sudo_user: "{{ user_name }}"
->>>>>>> develop:roles/workflow-bwa/tasks/main.yml
   environment:
     TMPDIR: /mnt/home/{{ user_name }}
-  shell: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ bundle_prefix }}.zip
+  shell: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip
   args:
     chdir: ~{{ user_name }}/released-bundles/
-    creates: ~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip
-
-  when: "'{{ bundle_prefix }}' not in provisioned_bundles.stdout"
-  register: workflow_downloaded
+    creates: ~{{ user_name }}/released-bundles/{{ item }}.zip
+  when: "'{{ item }}' not in provisioned_bundles.stdout"
+  register: workflows_downloaded
+  with_items: workflows
      
-  # note: zip may already have been cleaned up, this is why we're ignoring errors
-<<<<<<< HEAD:roles/workflow/tasks/main.yml
-- name: Setup workflow permissions
-  file: path=~seqware/released-bundles/{{ bundle_prefix }}.zip owner=seqware group=seqware
-  when: workflow_downloaded.changed
+ # note: zip may already have been cleaned up, this is why we're ignoring errors
+- name: Setup bundle permissions
+  file: path=~{{ user_name }}/released-bundles/{{ item }}.zip owner={{ user_name }} group={{ user_name }}
+  when: workflows_downloaded.changed
+  with_items: workflows
 
-- name : Install bundle 
-  sudo_user: seqware
-  shell: ~seqware/bin/seqware bundle install --zip ~seqware/released-bundles/{{ bundle_prefix }}.zip
-  when: workflow_downloaded.changed
-  args: 
-    creates: ~/seqware/provisioned-bundles/{{ bundle_prefix }}/  
-    
-- name: Remove workflow bundle
-  command: rm ~/seqware/released-bundles/{{ bundle_prefix }}.zip removes=~seqware/released-bundles/{{ bundle_prefix }}.zip
-=======
-- name: Setup bwa permissions
-  file: path=~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip owner={{ user_name }} group={{ user_name }}
-  when: bwa_downloaded.changed
-
-- name : Install bwa bundle 
+- name : Install workflow bundles
   sudo_user: "{{ user_name }}"
-  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip
-  when: bwa_downloaded.changed
+  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ item }}.zip
+  when: workflows_downloaded.changed
   args: 
-    creates: ~{{ user_name }}/provisioned-bundles/{{ bundle_prefix }}/  
+    creates: ~{{ user_name }}/provisioned-bundles/{{ items }}/  
+  with_items: workflows
     
-- name: Remove bwa bundle
-  command: rm ~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip removes=~{{ user_name }}/released-bundles/{{ bundle_prefix }}.zip
->>>>>>> develop:roles/workflow-bwa/tasks/main.yml
+- name: Remove workflow bundles
+  command: rm ~{{ user_name }}/released-bundles/{{ item }}.zip removes=~{{ user_name }}/released-bundles/{{ item }}.zip
+  with_items: workflows

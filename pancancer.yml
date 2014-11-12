@@ -7,6 +7,11 @@
 # however, it looks like that might be redundant due to setup_volumes.pl
 
 # do generic SeqWare setup
+#- hosts: master
+#  roles:
+#     - f500.dumpall
+
+
 - include: ../seqware-bag/seqware-install.yml
 
 - hosts: all
