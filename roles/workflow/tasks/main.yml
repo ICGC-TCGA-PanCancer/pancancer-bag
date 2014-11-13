@@ -1,0 +1,39 @@
+---
+# file: roles/workflow/tasks/install.yml
+
+- name: Detect workflows installed
+  command: ls ~{{ user_name }}/provisioned-bundles
+  register: provisioned_bundles
+  changed_when: false
+
+  # note we need to override the temporary working directory because this bundle is just too big
+  # need to use absolute paths, go figure
+- name: Download workflows
+  sudo_user: "{{ user_name }}"
+  environment:
+    TMPDIR: /mnt/home/{{ user_name }}
+  shell: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip
+  args:
+    chdir: ~{{ user_name }}/released-bundles/
+    creates: ~{{ user_name }}/released-bundles/{{ item }}.zip
+  when: '"{{ item }}" not in provisioned_bundles.stdout'
+  register: workflows_downloaded
+  with_items: workflows
+     
+ # note: zip may already have been cleaned up, this is why we're ignoring errors
+- name: Setup bundle permissions
+  file: path=~{{ user_name }}/released-bundles/{{ item }}.zip owner={{ user_name }} group={{ user_name }}
+  when: workflows_downloaded.changed
+  with_items: workflows
+
+- name : Install workflow bundles
+  sudo_user: "{{ user_name }}"
+  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ item }}.zip
+  when: workflows_downloaded.changed
+  args: 
+    creates: ~{{ user_name }}/provisioned-bundles/{{ item }}/  
+  with_items: workflows
+    
+- name: Remove workflow bundles
+  command: rm ~{{ user_name }}/released-bundles/{{ item }}.zip removes=~{{ user_name }}/released-bundles/{{ item }}.zip
+  with_items: workflows
