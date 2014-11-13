@@ -7,6 +7,7 @@
 # however, it looks like that might be redundant due to setup_volumes.pl
 
 # do generic SeqWare setup
+# this is a program for listing all ansible variables,  https://galaxy.ansible.com/list#/roles/646
 #- hosts: master
 #  roles:
 #     - f500.dumpall
