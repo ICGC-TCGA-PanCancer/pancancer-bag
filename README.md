@@ -31,7 +31,7 @@ technology to use.
 
 For provisioning in the Bindle configuration file specify:
 
-    workflow:(comma separated list of workflows to be installed)
+    workflows:(comma separated list of workflows to be installed)
 
 For BWA dependencies:
 
