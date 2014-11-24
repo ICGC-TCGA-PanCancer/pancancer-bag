@@ -33,10 +33,13 @@ technology to use.
 For provisioning in the Bindle configuration file specify:
 
     workflows = (comma separated list of workflows to be installed)
+    
+As an example to install BWA and HelloWorld, you require the following:
 
-For BWA dependencies:
-
+    install_workflow = True
     workflow_name = BWA
+    workflows=Workflow_Bundle_BWA_2.6.3_SeqWare_1.1.0-alpha.5,Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0-alpha.5
+
 
 Please see the [PanCancer Wiki](https://wiki.oicr.on.ca/display/PANCANCER) for
 more information about this project.
