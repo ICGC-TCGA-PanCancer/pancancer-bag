@@ -30,11 +30,14 @@ technology to use.
     perl bin/launcher/launch_cluster.pl --platform=openstack --cluster <cluster-name>
     (clusters will be listed in the coresponding configuration file)
 
+
 For provisioning in the Bindle configuration file specify:
 
-- workflow_name
-- workflow_verion
-- seqware_version
+    workflows = (comma separated list of workflows to be installed)
+
+For BWA dependencies:
+
+    workflow_name = BWA
 
 These will be used for both installing to corresponding workflow and dependencies
 
