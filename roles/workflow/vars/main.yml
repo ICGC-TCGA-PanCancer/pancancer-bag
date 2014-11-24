@@ -1,4 +1,4 @@
 ---
 # file: roles/workflow/vars/main.yml
 
-user_name: ubuntu
+user_name: seqware
