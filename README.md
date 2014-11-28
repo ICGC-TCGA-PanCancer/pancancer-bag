@@ -27,20 +27,23 @@ will provide you the specifics such as account name, API keys, and which cloud
 technology to use.
 
     # launch, use the correct command line args for you 
-    perl bin/launcher/launch_cluster.pl --platform=openstack --cluster <cluster-name>
-    (clusters will be listed in the coresponding configuration file)
+    perl bin/launch_cluster.pl --config=openstack --custom-params=<cluster-name>
+
 
 For provisioning in the Bindle configuration file specify:
 
-- workflow_name
-- workflow_verion
-- seqware_version
+    workflows = (comma separated list of workflows to be installed)
+    
+As an example to install BWA and HelloWorld, you require the following:
 
-These will be used for both installing to corresponding workflow and dependencies
+    install_workflow = True
+    workflow_name = BWA
+    workflows=Workflow_Bundle_BWA_2.6.3_SeqWare_1.1.0-alpha.5,Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0-alpha.5
+
 
 Please see the [PanCancer Wiki](https://wiki.oicr.on.ca/display/PANCANCER) for
 more information about this project.
 
 
 !!! Important !!!
-If running this on EBI or other cloud where large memory instances are not available, enable the "SGE hack" by passing sge_hack and swap_on as variables on the command line.
+If running this on EBI or other cloud where large memory instances are not available, enable the "SGE hack" by passing sge_hack and swap_on as variables on the command line or throught the Bindle configuration file.

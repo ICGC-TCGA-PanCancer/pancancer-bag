@@ -7,18 +7,27 @@
 # however, it looks like that might be redundant due to setup_volumes.pl
 
 # do generic SeqWare setup
+# this is a program for listing all ansible variables,  https://galaxy.ansible.com/list#/roles/646
+#- hosts: master
+#  roles:
+#     - f500.dumpall
+
+
 - include: ../seqware-bag/seqware-install.yml
 
 - hosts: all
   sudo: True
   vars:
-   swap_on: "False"
-   sge_hack: "False"
+   swap_on: False
+   sge_hack: False
   roles: 
+    - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
+    - { role: mount_device, when: device is defined }
     - { role: genetorrent }
     - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and workflow_name == 'BWA' ) }
     - { role: workflow_Sanger, when: ( workflow_name is defined and workflow_name == 'Sanger' ) }
+    - { role: ebi-custom }
 
 # 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.
     - { role: swap-enabled, when: swap_on and ansible_swaptotal_mb < 9000 }
