@@ -13,4 +13,4 @@
 - hosts: master 
   sudo: True
   roles: 
-    - { role: workflow , workflow_name: Sanger, workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.0_SeqWare_1.1.0-alpha.5  }
+    - { role: workflow , workflow_name: Sanger, workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.1_SeqWare_1.1.0-alpha.5  }
