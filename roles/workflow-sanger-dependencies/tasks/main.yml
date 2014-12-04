@@ -19,5 +19,6 @@
     - libxml-xpath-perl
     - libjson-perl
     - libxml-libxml-perl
+    - time
   tags: libs
 
