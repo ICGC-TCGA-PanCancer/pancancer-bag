@@ -1,0 +1,13 @@
+---
+# file: mini-pancancer.yml
+# This is a simple script run by itself to install all known dependencies 
+# for cancer with no actual workflows installed
+# without assuming anything about hardware
+
+- hosts: all
+  sudo: True
+  roles: 
+    - { role: workflow-dependencies }
+    - { role: genetorrent, user_name: seqware }
+    - { role: workflow-bwa-dependencies }
+    - { role: workflow-sanger-dependencies }
