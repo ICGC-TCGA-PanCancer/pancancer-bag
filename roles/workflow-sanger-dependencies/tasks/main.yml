@@ -20,5 +20,6 @@
     - libjson-perl
     - libxml-libxml-perl
     - time
+    - libjson-perl
   tags: libs
 
