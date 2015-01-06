@@ -21,5 +21,6 @@
     - libxml-libxml-perl
     - time
     - libjson-perl
+    - libdata-uuid-libuuid-perl
   tags: libs
 
