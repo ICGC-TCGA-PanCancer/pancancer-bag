@@ -15,7 +15,7 @@
 
 - include: ../seqware-bag/seqware-install.yml
 
-- hosts: all
+- hosts: master:worker
   sudo: True
   vars:
    swap_on: False
