@@ -1,0 +1,15 @@
+---
+# file: one-shot.yml
+#
+# # need to override hostname for seqware-bag since seqware-bag uses the inventory hostname and assumes that it is
+# # "master" while monitoring-bag assumes that it is a unique value used for sensu to distinguish between hosts
+#
+- hosts: master
+  sudo: True
+  tasks:
+  - name: Build hosts file for master
+    lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} master" state=present
+    with_items: groups['master']
+
+- include: pancancer.yml inventory_hostname=master
+- include: ../monitoring-bag/site.yml
