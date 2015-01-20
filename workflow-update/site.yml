@@ -1,0 +1,7 @@
+---
+
+- hosts: master
+  sudo: True
+  roles: 
+    - { role: update_workflow }
+
