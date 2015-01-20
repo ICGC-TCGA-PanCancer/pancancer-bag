@@ -1,5 +1,5 @@
 # Overview
-This playbook can be used to remotely update the Seqware workflow.
+This playbook can be used to remotely update the Seqware workflow. The playbook uses a copy of the new workflow that needs to be downloaded locally first instead of getting the new workflow (>12 GB) from S3 each time, as this saves time, bandwidth and money.
 
 ## Using the playbook
 
@@ -12,9 +12,8 @@ The following should be run from the Bindle server (replace workflow name and UR
 	cd workflow-update 
 
 Edit the “inventory” file and add the addresses of the VMs.
-Edit “roles/worker/vars/main.yml” and specify the name of the new workflow bundle.
 Edit "workflow-update/roles/update_workflow/vars/main.yml" and specify the name of the new workflow, making sure you exclude the ".zip" extension.
 
-Run the following comman from the workflow-update directory:
+Run the following command from the workflow-update directory:
 	ansible-playbook -i inventory site.yml
 
