@@ -20,7 +20,7 @@
     - libjson-perl
     - libxml-libxml-perl
     - time
-    - libdata-uuidperl
+    - libdata-uuid-perl
     - libuuid-perl
     - libcarp-always-perl
     - libipc-system-simple-perl
