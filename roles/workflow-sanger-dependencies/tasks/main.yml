@@ -21,6 +21,7 @@
     - libxml-libxml-perl
     - time
     - libdata-uuid-perl
+    - libossp-uuid-perl
     - libuuid-perl
     - libcarp-always-perl
     - libipc-system-simple-perl
