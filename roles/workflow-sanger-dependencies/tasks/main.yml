@@ -28,5 +28,6 @@
     - samtools
     - libdata-uuid-libuuid-perl 
     - libcarp-always-perl 
+    - curl
   tags: libs
 
