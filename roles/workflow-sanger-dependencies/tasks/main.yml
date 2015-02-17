@@ -25,5 +25,6 @@
     - libuuid-perl
     - libcarp-always-perl
     - libipc-system-simple-perl
+    - curl
   tags: libs
 
