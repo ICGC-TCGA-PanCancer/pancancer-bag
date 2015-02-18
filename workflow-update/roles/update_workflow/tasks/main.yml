@@ -1,0 +1,34 @@
+---
+# file: roles/update_workflow/tasks/main.yml
+
+- name: Detect workflows installed
+  command: ls ~{{ user_name }}/provisioned-bundles
+  register: provisioned_bundles
+  changed_when: false
+
+#- debug: msg="{{ provisioned_bundles.stdout }}"
+
+- name: Copy workflows
+  copy: src={{ item }}.zip dest=/home/seqware/released-bundles/{{ item }}.zip owner=seqware group=seqware mode=0755 force=no
+  when: '"{{ item }}" not in provisioned_bundles.stdout'
+  register: workflows_downloaded
+  with_items: workflows
+
+     
+ # note: zip may already have been cleaned up, this is why we're ignoring errors
+- name: Setup bundle permissions
+  file: path=~{{ user_name }}/released-bundles/{{ item }}.zip owner={{ user_name }} group={{ user_name }}
+  when: workflows_downloaded.changed
+  with_items: workflows
+
+- name : Install workflow bundles
+  sudo_user: "{{ user_name }}"
+  shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ item }}.zip
+  when: workflows_downloaded.changed
+  args: 
+    creates: ~{{ user_name }}/provisioned-bundles/{{ item }}/  
+  with_items: workflows
+    
+- name: Remove workflow bundles
+  command: rm ~{{ user_name }}/released-bundles/{{ item }}.zip removes=~{{ user_name }}/released-bundles/{{ item }}.zip
+  with_items: workflows

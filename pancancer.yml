@@ -15,7 +15,7 @@
 
 - include: ../seqware-bag/seqware-install.yml
 
-- hosts: all
+- hosts: master:worker
   sudo: True
   vars:
    swap_on: False
@@ -23,9 +23,9 @@
   roles: 
     - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
-    - { role: mount_device, when: device is defined }
     - { role: genetorrent }
-    - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and workflow_name == 'BWA' ) }
+    - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and 'BWA' in workflow_name ) }
+    - { role: workflow-sanger-dependencies, when: ( workflow_name is defined and 'Sanger' in workflow_name ) }
     - { role: ebi-custom }
 
 # 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.

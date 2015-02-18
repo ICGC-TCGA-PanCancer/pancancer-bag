@@ -1,0 +1,33 @@
+---
+# file: roles/workflow_Sanger/tasks/main.yml
+
+- name: Install Sanger workflow dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - g++
+    - pkg-config
+    - dh-autoreconf
+    - libncurses5-dev
+    - libgd2-xpm-dev
+    - libboost-all-dev
+    - libpstreams-dev
+    - libglib2.0-dev
+    - r-base
+    - r-base-core
+    - r-cran-rcolorbrewer
+    - libxml-dom-perl
+    - libxml-xpath-perl
+    - libjson-perl
+    - libxml-libxml-perl
+    - time
+    - libdata-uuid-perl
+    - libossp-uuid-perl
+    - libuuid-perl
+    - libcarp-always-perl
+    - libipc-system-simple-perl
+    - samtools
+    - libdata-uuid-libuuid-perl 
+    - libcarp-always-perl 
+    - curl
+  tags: libs
+

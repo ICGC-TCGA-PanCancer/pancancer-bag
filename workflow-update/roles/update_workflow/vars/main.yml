@@ -1,0 +1,4 @@
+---
+# file: roles/update_workflow/main.yml
+user_name: seqware
+workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.4_SeqWare_1.1.0-alpha.5

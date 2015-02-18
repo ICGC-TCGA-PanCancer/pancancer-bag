@@ -1,0 +1,8 @@
+---
+# file: one-shot.yml
+#
+# # need to override hostname for seqware-bag since seqware-bag uses the inventory hostname and assumes that it is
+# # "master" while monitoring-bag assumes that it is a unique value used for sensu to distinguish between hosts
+
+- include: pancancer.yml
+- include: ../monitoring-bag/site.yml
