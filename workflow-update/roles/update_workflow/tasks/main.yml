@@ -7,26 +7,21 @@
   register: provisioned_bundles
   changed_when: false
 
-#- debug: var=provisioned_bundles.stdout
-
-#- debug: var=workflows
-
-- name: Delete old provisioned bundles
-  sudo_user: "{{ user_name }}"
-  shell: rm -r *
-  args:
-     chdir: /home/{{ user_name }}/provisioned-bundles/
-  when: '"{{ item }}" in provisioned_bundles.stdout'
-  with_items: workflows
-
 - name: Copy workflows
   sudo_user: "{{ user_name }}"
   copy: src={{ item }}.zip dest=/home/seqware/released-bundles/{{ item }}.zip owner=seqware group=seqware mode=0755 force=no
-  #when: '"{{ item }}" not in provisioned_bundles.stdout'
+  when: '"{{ item }}" not in provisioned_bundles.stdout'
   register: workflows_downloaded
   with_items: workflows
 
-     
+- name: Delete old provisioned bundles (Sanger only)
+  sudo_user: "{{ user_name }}"
+  shell: rm -r Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr*
+  args:
+     chdir: /home/{{ user_name }}/provisioned-bundles/
+  when: '"Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr" in provisioned_bundles.stdout'
+  with_items: workflows
+
  # note: zip may already have been cleaned up, this is why we're ignoring errors
 - name: Setup bundle permissions
   sudo_user: "{{ user_name }}"
@@ -34,6 +29,9 @@
   when: workflows_downloaded.changed
   with_items: workflows
 
+ # This command will fail if '[SeqWare Pipeline] ERROR' is detected in *stdout* (it seems that this is not written to stderr, or at least not in a way that
+ # Ansible can properly detect it - maybe because it's the "shell" module calling seqware script which calls the seqware plugin...?)
+ # If there is other text that should be tested for, it should be included in the condition in "failed_when"
 - name : Install workflow bundles
   sudo_user: "{{ user_name }}"
   shell: /home/{{ user_name }}/bin/seqware bundle install --zip /home/{{ user_name }}/released-bundles/{{ item }}.zip
@@ -42,9 +40,9 @@
     creates: /home/{{ user_name }}/provisioned-bundles/{{ item }}/  
   with_items: workflows
   register: install_result
+  failed_when: "'[SeqWare Pipeline] ERROR' in install_result.stdout"
 
-
-- name: Remove workflow bundles
+- name: Remove workflow bundles (from released-bundles dir)
   sudo_user: "{{ user_name }}"
   command: rm /home/{{ user_name }}/released-bundles/{{ item }}.zip removes=/home/{{ user_name }}/released-bundles/{{ item }}.zip
   with_items: workflows
