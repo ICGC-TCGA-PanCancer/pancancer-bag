@@ -29,5 +29,6 @@
     - libdata-uuid-libuuid-perl 
     - libcarp-always-perl 
     - curl
+    - libfile-tail-perl
   tags: libs
 
