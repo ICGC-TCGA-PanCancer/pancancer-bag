@@ -1,0 +1,79 @@
+---
+# Install Dependencies for DEWrapper Workflow, and perform setup.
+- name: Install DEWrapper workflow dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - python
+    - openjdk-7-jdk
+
+- name: Download get-pip
+  get_url: url=https://bootstrap.pypa.io/get-pip.py dest=/tmp/get-pip.py
+
+- name: Install pip
+  sudo: True
+  shell: python /tmp/get-pip.py
+
+- name: Install docker-py
+  sudo: True
+  pip: name=docker-py
+
+- name: Install AWS CLI
+  sudo: True
+  pip: name=awscli
+
+- name: Get docker container seqware_whitestar
+  shell: docker pull seqware/seqware_whitestar
+
+- name: Get docker container seqware_full
+  shell: docker pull seqware/seqware_full
+
+- name: Get docker container pcawg-delly-workflow
+  shell: docker pull pancancer/pcawg-delly-workflow
+
+- name: prep aws python module
+  sudo: true
+  pip: name=boto
+
+- name: Setup aws config directory
+  file: state=directory path=~/.aws
+
+- name: Copy over aws config
+  copy: src=aws_config dest=~/.aws/config
+
+- name: Copy over aws config again (for boto which is used for ansible's s3 module)
+  copy: src=aws_config dest=~/.aws/credentials
+
+- name: Copy over DKFZ image 
+  s3: bucket=oicr.docker.private.images object=dkfz_dockered_workflows.tar dest=~/dkfz_dockered_workflows.tar mode=get
+  
+- name: Copy over bundledFiles supporting DKFZ container
+  s3: bucket=oicr.docker.private.images object=dkfz-workflow-dependencies_150218_0931.tar.gz dest=~/dkfz-workflow-dependencies_150218_0931.tar.gz mode=get
+
+- name: Load DKFZ image  
+  shell: docker load -i dkfz_dockered_workflows.tar
+  
+- name: Setup datastore
+  file: path=~/bundledFiles state=directory
+  
+- name: Untar bundledFiles
+  unarchive: src=~/dkfz-workflow-dependencies_150218_0931.tar.gz dest=~/bundledFiles copy=no
+
+- name: Create workflows directory
+  sudo: yes
+  file: /workflows state=directory owner=ubuntu group=ubuntu mode=0777
+
+- name: Create datastore directory
+  sudo: yes
+  file: /datastore state=directory owner=ubuntu group=ubuntu mode=0777
+
+- name: Get Seqware artifact
+  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.0-alpha.6/seqware-distribution-1.1.0-alpha.6-full.jar
+
+- name: Unzip DEWrapperWorkflow
+  shell: java -cp seqware-distribution-1.1.0-alpha.6-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
+
+- name: Get workflow launcher script
+  get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
+
+- name: Get workflow launcher script for Whitestar
+  get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
