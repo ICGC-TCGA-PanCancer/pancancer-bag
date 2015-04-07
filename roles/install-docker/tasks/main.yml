@@ -1,4 +1,4 @@
---- # docker/tasks/main.yml
+--- # install-docker/tasks/main.yml
 
 - name: check the installation
   shell: docker info

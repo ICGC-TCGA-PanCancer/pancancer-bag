@@ -21,41 +21,68 @@
   sudo: True
   pip: name=awscli
 
-- name: Get docker container seqware_whitestar
-  shell: docker pull seqware/seqware_whitestar
-
-- name: Get docker container seqware_full
-  shell: docker pull seqware/seqware_full
-
-- name: Get docker container pcawg-delly-workflow
-  shell: docker pull pancancer/pcawg-delly-workflow
-
 - name: prep aws python module
   sudo: true
   pip: name=boto
 
 - name: Setup aws config directory
-  file: state=directory path=~/.aws
+  remote_user: '{{ user_name }}' 
+  file: state=directory path=/home/{{ user_name }}/.aws
 
 - name: Copy over aws config
-  copy: src=aws_config dest=~/.aws/config
+  remote_user: '{{ user_name }}'
+  copy: src=aws_config dest=/home/{{ user_name }}/.aws/config owner={{ user_name }}
 
 - name: Copy over aws config again (for boto which is used for ansible's s3 module)
-  copy: src=aws_config dest=~/.aws/credentials
+  remote_user: '{{ user_name }}'
+  copy: src=aws_credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
+
+- name: Copy over aws config again (for boto which is used for ansible's s3 module)
+  remote_user: '{{ user_name }}'
+  copy: src=aws_credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
+
+- name: Update .boto file
+  remote_user: '{{ user_name }}'
+  lineinfile: dest=/home/{{ user_name }}/.boto regexp="\[([^\[\]]*)\]" line="[Credentials]" backrefs=yes
+
+  # The s3 module does not support multipart files. If you try to use s3 module to get these files, you get this error:
+  # "Files uploaded with multipart of s3 are not supported with checksum, unable to compute checksum."
+  # So, the result is that we must use the shell module to call the aws s3 command to download multipart files.
+#- name: Copy over DKFZ image 
+#  sudo_user: '{{ user_name }}'
+#  s3: bucket=oicr.docker.private.images object=dkfz_dockered_workflows.tar dest=/home/{{ user_name }}/dkfz_dockered_workflows.tar mode=get
 
 - name: Copy over DKFZ image 
-  s3: bucket=oicr.docker.private.images object=dkfz_dockered_workflows.tar dest=~/dkfz_dockered_workflows.tar mode=get
+  sudo_user: '{{ user_name }}'
+  shell: creates=/home/{{ user_name }}/dkfz_dockered_workflows.tar aws s3 cp s3://oicr.docker.private.images/dkfz_dockered_workflows.tar /home/{{ user_name }}/dkfz_dockered_workflows.tar 
   
 - name: Copy over bundledFiles supporting DKFZ container
-  s3: bucket=oicr.docker.private.images object=dkfz-workflow-dependencies_150218_0931.tar.gz dest=~/dkfz-workflow-dependencies_150218_0931.tar.gz mode=get
+  sudo_user: '{{ user_name }}'
+  shell: creates=/home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tar.gz aws s3 cp s3://oicr.docker.private.images/dkfz-workflow-dependencies_150218_0931.tar.gz /home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tar.gz
 
-- name: Load DKFZ image  
-  shell: docker load -i dkfz_dockered_workflows.tar
+- name: Get docker container seqware_whitestar
+  docker:
+    image: seqware/seqware_whitestar
+
+- name: Get docker container seqware_full
+  docker:
+    image: seqware/seqware_full
+
+- name: Get docker container pcawg-delly-workflow
+  docker:
+    image: pancancer/pcawg-delly-workflow
+
+- name: Load DKFZ image
+  #sudo_user: '{{ user_name }}'
+  #sudo: yes 
+  shell: docker load -i /home/{{ user_name }}/dkfz_dockered_workflows.tar
   
 - name: Setup datastore
+  sudo_user: '{{ user_name }}'
   file: path=~/bundledFiles state=directory
   
 - name: Untar bundledFiles
+  sudo_user: '{{ user_name }}'
   unarchive: src=~/dkfz-workflow-dependencies_150218_0931.tar.gz dest=~/bundledFiles copy=no
 
 - name: Create workflows directory
@@ -67,13 +94,17 @@
   file: /datastore state=directory owner=ubuntu group=ubuntu mode=0777
 
 - name: Get Seqware artifact
+  sudo_user: '{{ user_name }}'
   get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.0-alpha.6/seqware-distribution-1.1.0-alpha.6-full.jar
 
 - name: Unzip DEWrapperWorkflow
+  sudo_user: '{{ user_name }}'
   shell: java -cp seqware-distribution-1.1.0-alpha.6-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
 
 - name: Get workflow launcher script
+  sudo_user: '{{ user_name }}'
   get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
 
 - name: Get workflow launcher script for Whitestar
+  sudo_user: '{{ user_name }}'
   get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
