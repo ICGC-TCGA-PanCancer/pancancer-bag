@@ -41,6 +41,8 @@
   remote_user: '{{ user_name }}'
   copy: src=aws_credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
 
+# ansible s3 module uses boto to connect to aws, and boto uses a .boto config file which is the 
+# same as the aws_credentials file, except the header says "[Credentials]".
 - name: Update .boto file
   remote_user: '{{ user_name }}'
   lineinfile: dest=/home/{{ user_name }}/.boto regexp="\[([^\[\]]*)\]" line="[Credentials]" backrefs=yes
@@ -55,10 +57,11 @@
 - name: Copy over DKFZ image 
   sudo_user: '{{ user_name }}'
   shell: creates=/home/{{ user_name }}/dkfz_dockered_workflows.tar aws s3 cp s3://oicr.docker.private.images/dkfz_dockered_workflows.tar /home/{{ user_name }}/dkfz_dockered_workflows.tar 
-  
+
+  #NOTE: Not sure, but it seems to me that Ansible unarchive module prefers .tgz to .tar.gz
 - name: Copy over bundledFiles supporting DKFZ container
   sudo_user: '{{ user_name }}'
-  shell: creates=/home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tar.gz aws s3 cp s3://oicr.docker.private.images/dkfz-workflow-dependencies_150218_0931.tar.gz /home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tar.gz
+  shell: creates=/home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tgz aws s3 cp s3://oicr.docker.private.images/dkfz-workflow-dependencies_150218_0931.tar.gz /home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tgz
 
 - name: Get docker container seqware_whitestar
   docker:
@@ -73,38 +76,50 @@
     image: pancancer/pcawg-delly-workflow
 
 - name: Load DKFZ image
-  #sudo_user: '{{ user_name }}'
-  #sudo: yes 
   shell: docker load -i /home/{{ user_name }}/dkfz_dockered_workflows.tar
   
 - name: Setup datastore
   sudo_user: '{{ user_name }}'
   file: path=~/bundledFiles state=directory
-  
+
+# Before running unarchive, check the the file isn't already unarchived: the unarchive module will take a very long time to run,
+# even if the file is already unarchived.
+- name: check if already unarchived
+  stat: path=~/bundledFiles
+  sudo_user: '{{ user_name }}'
+  register: bundledFilesStat
+ 
 - name: Untar bundledFiles
   sudo_user: '{{ user_name }}'
-  unarchive: src=~/dkfz-workflow-dependencies_150218_0931.tar.gz dest=~/bundledFiles copy=no
+  unarchive: src=~/dkfz-workflow-dependencies_150218_0931.tgz dest=~/bundledFiles copy=no
+  when: not bundledFilesStat.stat.exists
 
 - name: Create workflows directory
   sudo: yes
-  file: /workflows state=directory owner=ubuntu group=ubuntu mode=0777
+  file: path=/workflows state=directory owner=ubuntu group=ubuntu mode=0777
 
+- name: check if /datastore already exists
+  stat: path=/datastore
+  register: datastoreStat
+
+# This may already exists (created in another playbook), as symlink to /mnt/datastore
 - name: Create datastore directory
   sudo: yes
-  file: /datastore state=directory owner=ubuntu group=ubuntu mode=0777
+  file: path=/datastore state=directory owner=ubuntu group=ubuntu mode=0777
+  when: not datastoreStat.stat.exists
 
 - name: Get Seqware artifact
   sudo_user: '{{ user_name }}'
-  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.0-alpha.6/seqware-distribution-1.1.0-alpha.6-full.jar
+  get_url: dest=~/seqware-distribution-1.1.0-alpha.6-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.0-alpha.6/seqware-distribution-1.1.0-alpha.6-full.jar
 
 - name: Unzip DEWrapperWorkflow
   sudo_user: '{{ user_name }}'
-  shell: java -cp seqware-distribution-1.1.0-alpha.6-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
+  shell: java -cp ~/seqware-distribution-1.1.0-alpha.6-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
 
 - name: Get workflow launcher script
   sudo_user: '{{ user_name }}'
-  get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
+  get_url: dest=~/launchWorkflow.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
 
 - name: Get workflow launcher script for Whitestar
   sudo_user: '{{ user_name }}'
-  get_url: url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
+  get_url: dest=~/launchWorkflowDev.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
