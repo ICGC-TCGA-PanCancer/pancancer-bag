@@ -31,15 +31,15 @@
 
 - name: Copy over aws config
   remote_user: '{{ user_name }}'
-  copy: src=aws_config dest=/home/{{ user_name }}/.aws/config owner={{ user_name }}
+  copy: src=/home/{{ user_name }}/.aws/config dest=/home/{{ user_name }}/.aws/config owner={{ user_name }}
 
 - name: Copy over aws config again (for boto which is used for ansible's s3 module)
   remote_user: '{{ user_name }}'
-  copy: src=aws_credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
+  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
 
 - name: Copy over aws config again (for boto which is used for ansible's s3 module)
   remote_user: '{{ user_name }}'
-  copy: src=aws_credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
+  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
 
 # ansible s3 module uses boto to connect to aws, and boto uses a .boto config file which is the 
 # same as the aws_credentials file, except the header says "[Credentials]".
