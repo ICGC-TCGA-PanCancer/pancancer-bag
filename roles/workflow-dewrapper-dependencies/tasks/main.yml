@@ -37,9 +37,10 @@
   remote_user: '{{ user_name }}'
   copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
 
-- name: Copy over aws config again (for boto which is used for ansible's s3 module)
-  remote_user: '{{ user_name }}'
-  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
+# Might not be needed anymore.
+#- name: Copy over aws config again (for boto which is used for ansible's s3 module)
+#  remote_user: '{{ user_name }}'
+#  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
 
 # ansible s3 module uses boto to connect to aws, and boto uses a .boto config file which is the 
 # same as the aws_credentials file, except the header says "[Credentials]".
@@ -67,13 +68,13 @@
   docker:
     image: seqware/seqware_whitestar
 
-- name: Get docker container seqware_full
-  docker:
-    image: seqware/seqware_full
-
 - name: Get docker container pcawg-delly-workflow
   docker:
     image: pancancer/pcawg-delly-workflow
+
+- name: Get docker container pancancer_upload_download
+  docker:
+    image: seqware/pancancer_upload_download
 
 - name: Load DKFZ image
   shell: docker load -i /home/{{ user_name }}/dkfz_dockered_workflows.tar
