@@ -1,0 +1,26 @@
+--- # install-docker/tasks/main.yml
+
+- name: check the installation
+  shell: docker info
+  register: docker_info_pre
+  ignore_errors: true
+
+- name: install docker.io package
+  shell: "curl --ssl https://get.docker.com/ | sudo sh"
+  when: docker_info_pre.stderr.find('not found') != -1
+  notify:
+    - restart docker
+
+- name: setup ubuntu user for non-root access
+  sudo: yes
+  shell:  usermod -aG docker ubuntu
+  ignore_errors: true
+
+- name: check the installation
+  shell: docker info
+  register: docker_info_post
+
+- name: fail if something went wrong
+  fail: msg="Something went wrong during docker installation"
+  when: docker_info_post | failed
+
