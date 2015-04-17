@@ -37,24 +37,6 @@
   remote_user: '{{ user_name }}'
   copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
 
-# Might not be needed anymore.
-#- name: Copy over aws config again (for boto which is used for ansible's s3 module)
-#  remote_user: '{{ user_name }}'
-#  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.boto owner={{ user_name }}
-
-# ansible s3 module uses boto to connect to aws, and boto uses a .boto config file which is the 
-# same as the aws_credentials file, except the header says "[Credentials]".
-- name: Update .boto file
-  remote_user: '{{ user_name }}'
-  lineinfile: dest=/home/{{ user_name }}/.boto regexp="\[([^\[\]]*)\]" line="[Credentials]" backrefs=yes
-
-  # The s3 module does not support multipart files. If you try to use s3 module to get these files, you get this error:
-  # "Files uploaded with multipart of s3 are not supported with checksum, unable to compute checksum."
-  # So, the result is that we must use the shell module to call the aws s3 command to download multipart files.
-#- name: Copy over DKFZ image 
-#  sudo_user: '{{ user_name }}'
-#  s3: bucket=oicr.docker.private.images object=dkfz_dockered_workflows.tar dest=/home/{{ user_name }}/dkfz_dockered_workflows.tar mode=get
-
 - name: Copy over DKFZ image 
   sudo_user: '{{ user_name }}'
   shell: creates=/home/{{ user_name }}/dkfz_dockered_workflows.tar aws s3 cp s3://oicr.docker.private.images/dkfz_dockered_workflows.tar /home/{{ user_name }}/dkfz_dockered_workflows.tar 
