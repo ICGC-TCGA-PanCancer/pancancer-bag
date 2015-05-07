@@ -12,12 +12,14 @@
 #  roles:
 #     - f500.dumpall
 
+- hosts: master:worker
+  tasks:
+    - name: seqware in container? 
+      debug: var=seqware_in_container is defined and seqware_in_container=true
+    - name: workflow is
+      debug: var=workflow_name
 
-- include: ../seqware-bag/seqware-install.yml
-  when: seqware_in_container is not defined or seqware_in_container = false
-
-- include: ../seqware-bag/install-seqware-container.yml
-  when: seqware_in_container is defined and seqware_in_container = true 
+- include: ../seqware-bag/seqware-install.yml install_container={{ seqware_in_container }}
 
 - hosts: master:worker
   sudo: True
@@ -28,17 +30,16 @@
     - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
     - { role: genetorrent }
-    - { role: install-docker, when: (workflow_name is defined and 'DEWrapper' in workflow_name or seqware_in_container is defined and seqware_in_container = true) } 
+    - { role: install-docker, when: (workflow_name is defined and 'DEWrapper' in workflow_name or seqware_in_container is defined and seqware_in_container) } 
     - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and 'BWA' in workflow_name ) }
     - { role: workflow-sanger-dependencies, when: ( workflow_name is defined and 'Sanger' in workflow_name ) }
-    - { role: workflow-sanger-with-docker, when: (workflow_name is defined and 'Sanger' in workflow_name and seqware_in_container is defined and seqware_in_container = true ) }
+    - { role: workflow-sanger-with-docker, when: (workflow_name is defined and 'Sanger' in workflow_name and seqware_in_container is defined and seqware_in_container ) }
     - { role: workflow-dewrapper-dependencies, when: (workflow_name is defined and 'DEWrapper' in workflow_name ) } 
     - { role: ebi-custom }
-
-# 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.
+    # 9000 equals to aproximately 10 GB of SWAP; we don't want to run the playbook if the instance already has 10 GB of SWAP because the role was most probably already applied.
     - { role: swap-enabled, when: swap_on and ansible_swaptotal_mb < 9000 }
 
 - hosts: master 
   sudo: True
   roles: 
-    - { role: workflow, when: install_workflow is defined }
+    - { role: workflow, seqware_in_container: seqware_in_container , when: install_workflow is defined }

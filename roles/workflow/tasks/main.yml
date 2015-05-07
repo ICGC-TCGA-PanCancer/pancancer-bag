@@ -1,30 +1,47 @@
 ---
 # file: roles/workflow/tasks/install.yml
 
+- debug: var=seqware_in_container
+
+
+- name: workflows in /home/seqware/provisioned-bundles
+  set_fact:
+    installed_workflows_path: "~{{ user_name }}/provisioned-bundles/"
+    target_workflow_path: "~{{ user_name }}/released-bundles"
+  when: not seqware_in_container
+
+- name: workflows in /workflows
+  set_fact:
+    installed_workflows_path: /workflows
+    target_workflow_path: /workflows
+  when: seqware_in_container
+
 - name: Detect workflows installed
-  command: ls ~{{ user_name }}/provisioned-bundles
+  command: ls {{ installed_workflows_path }}
   register: provisioned_bundles
   changed_when: false
 
   # note we need to override the temporary working directory because this bundle is just too big
   # need to use absolute paths, go figure
+  # TODO: Use get_url instead of "shell: wget" here.
 - name: Download workflows
   sudo_user: "{{ user_name }}"
-  environment:
-    TMPDIR: /mnt/home/{{ user_name }}
-  shell: wget http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip
-  args:
-    chdir: ~{{ user_name }}/released-bundles/
-    creates: ~{{ user_name }}/released-bundles/{{ item }}.zip
+#  environment:
+#    TMPDIR: /mnt/home/{{ user_name }}
+  get_url: url=http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip dest=/mnt/home/{{ user_name }}/{{ target_workflow_path }}/{{ item }}.zip
+#  args:
+#    chdir: "{{ target_workflow_path }}"
+#    creates: "{{ target_workflow_path }}/{{ item }}.zip"
   when: '"{{ item }}" not in provisioned_bundles.stdout'
   register: workflows_downloaded
   with_items: workflows
-     
+    
  # note: zip may already have been cleaned up, this is why we're ignoring errors
 - name: Setup bundle permissions
-  file: path=~{{ user_name }}/released-bundles/{{ item }}.zip owner={{ user_name }} group={{ user_name }}
+  file: path={{ target_workflow_path }}/{{ item }}.zip owner={{ user_name }} group={{ user_name }}
   when: workflows_downloaded.changed
   with_items: workflows
+  when: not seqware_in_container
 
 - name : Install workflow bundles
   sudo_user: "{{ user_name }}"
@@ -33,7 +50,21 @@
   args: 
     creates: ~{{ user_name }}/provisioned-bundles/{{ item }}/  
   with_items: workflows
+  when: not seqware_in_container
     
-- name: Remove workflow bundles
-  command: rm ~{{ user_name }}/released-bundles/{{ item }}.zip removes=~{{ user_name }}/released-bundles/{{ item }}.zip
+- name: Get seqware jar to unzip workflows
+  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.1/seqware-distribution-1.1.1-full.jar dest=/workflows/seqware-distribution-1.1.1-full.jar
+  when: seqware_in_container
+
+- name: Unzip workflows
+  shell: java -jar seqware-distribution-1.1.0-alpha.6-full.jar -cp net.sourceforge.seqware.pipeline.tools.UnZip --input-zip /mnt/home/{{ user_name }}/{{ target_workflow_path }}/{{ item }}.zip --output-dir {{ item }}
+  args:
+    chdir: /workflows
   with_items: workflows
+  when: seqware_in_container
+
+- name: Remove workflow bundles
+  command: rm {{ target_workflow_path }}/{{ item }}.zip removes={{ target_workflow_path }}/{{ item }}.zip
+  with_items: workflows
+
+
