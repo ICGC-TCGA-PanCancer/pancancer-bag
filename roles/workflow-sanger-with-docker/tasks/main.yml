@@ -1,0 +1,54 @@
+---
+# Install Sanger working with seqware in docker
+- name: Install DEWrapper workflow dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - python
+    - openjdk-7-jdk
+
+- name: Download get-pip
+  get_url: url=https://bootstrap.pypa.io/get-pip.py dest=/tmp/get-pip.py
+
+- name: Install pip
+  sudo: True
+  shell: python /tmp/get-pip.py
+
+- name: Install docker-py
+  sudo: True
+  pip: name=docker-py
+
+- name: Install AWS CLI
+  sudo: True
+  pip: name=awscli
+
+- name: prep aws python module
+  sudo: true
+  pip: name=boto
+
+- name: Setup aws config directory
+  remote_user: '{{ user_name }}' 
+  file: state=directory path=/home/{{ user_name }}/.aws
+
+- name: Copy over aws config
+  remote_user: '{{ user_name }}'
+  copy: src=/home/{{ user_name }}/.aws/config dest=/home/{{ user_name }}/.aws/config owner={{ user_name }}
+
+- name: Copy over aws config again (for boto which is used for ansible's s3 module)
+  remote_user: '{{ user_name }}'
+  copy: src=/home/{{ user_name }}/.aws/credentials dest=/home/{{ user_name }}/.aws/credentials owner={{ user_name }}
+
+- name: Create workflows directory
+  sudo: yes
+  file: path=/workflows state=directory owner=ubuntu group=ubuntu mode=0777
+
+- name: check if /datastore already exists
+  stat: path=/datastore
+  register: datastoreStat
+
+# This may already exists (created in another playbook), as symlink to /mnt/datastore
+- name: Create datastore directory
+  sudo: yes
+  file: path=/datastore state=directory owner=ubuntu group=ubuntu mode=0777
+  when: not datastoreStat.stat.exists
+
+

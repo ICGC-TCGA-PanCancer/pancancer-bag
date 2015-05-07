@@ -14,6 +14,10 @@
 
 
 - include: ../seqware-bag/seqware-install.yml
+  when: seqware_in_container is not defined or seqware_in_container = false
+
+- include: ../seqware-bag/install-seqware-container.yml
+  when: seqware_in_container is defined and seqware_in_container = true 
 
 - hosts: master:worker
   sudo: True
@@ -24,9 +28,10 @@
     - { role: mount_device, when: device is defined }
     - { role: workflow-dependencies }
     - { role: genetorrent }
+    - { role: install-docker, when: (workflow_name is defined and 'DEWrapper' in workflow_name or seqware_in_container is defined and seqware_in_container = true) } 
     - { role: workflow-bwa-dependencies, when: ( workflow_name is defined and 'BWA' in workflow_name ) }
     - { role: workflow-sanger-dependencies, when: ( workflow_name is defined and 'Sanger' in workflow_name ) }
-    - { role: install-docker, when: (workflow_name is defined and 'DEWrapper' in workflow_name ) } 
+    - { role: workflow-sanger-with-docker, when: (workflow_name is defined and 'Sanger' in workflow_name and seqware_in_container is defined and seqware_in_container = true ) }
     - { role: workflow-dewrapper-dependencies, when: (workflow_name is defined and 'DEWrapper' in workflow_name ) } 
     - { role: ebi-custom }
 
