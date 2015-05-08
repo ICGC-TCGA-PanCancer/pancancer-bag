@@ -28,7 +28,7 @@
   sudo_user: "{{ user_name }}"
 #  environment:
 #    TMPDIR: /mnt/home/{{ user_name }}
-  get_url: url=http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip dest=/mnt/home/{{ user_name }}/{{ target_workflow_path }}/{{ item }}.zip
+  get_url: url=http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/{{ item }}.zip dest={{ target_workflow_path }}/{{ item }}.zip
 #  args:
 #    chdir: "{{ target_workflow_path }}"
 #    creates: "{{ target_workflow_path }}/{{ item }}.zip"
@@ -46,18 +46,18 @@
 - name : Install workflow bundles
   sudo_user: "{{ user_name }}"
   shell: ~{{ user_name }}/bin/seqware bundle install --zip ~{{ user_name }}/released-bundles/{{ item }}.zip
-  when: workflows_downloaded.changed
   args: 
     creates: ~{{ user_name }}/provisioned-bundles/{{ item }}/  
   with_items: workflows
-  when: not seqware_in_container
+  when: not seqware_in_container and workflows_downloaded.changed
+
     
 - name: Get seqware jar to unzip workflows
   get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.1/seqware-distribution-1.1.1-full.jar dest=/workflows/seqware-distribution-1.1.1-full.jar
   when: seqware_in_container
 
 - name: Unzip workflows
-  shell: java -jar seqware-distribution-1.1.0-alpha.6-full.jar -cp net.sourceforge.seqware.pipeline.tools.UnZip --input-zip /mnt/home/{{ user_name }}/{{ target_workflow_path }}/{{ item }}.zip --output-dir {{ item }}
+  shell: java -cp /workflows/seqware-distribution-1.1.1-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip {{ target_workflow_path }}/{{ item }}.zip --output-dir {{ target_workflow_path }}/{{ item }}
   args:
     chdir: /workflows
   with_items: workflows

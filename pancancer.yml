@@ -43,3 +43,8 @@
   sudo: True
   roles: 
     - { role: workflow, seqware_in_container: seqware_in_container , when: install_workflow is defined }
+
+- hosts: master
+  sudo: True
+  roles:
+    - { role: run-helloworld , when: test_workflow }
