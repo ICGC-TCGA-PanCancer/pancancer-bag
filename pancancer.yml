@@ -44,7 +44,14 @@
   roles: 
     - { role: workflow, seqware_in_container: seqware_in_container , when: install_workflow is defined }
 
+#Now run HelloWorld as a basic sanity check.
 - hosts: master
   sudo: True
   roles:
     - { role: run-helloworld , when: test_workflow }
+
+- hosts: master
+    sudo: True
+    roles:
+      - { roles: arch_3 }
+
