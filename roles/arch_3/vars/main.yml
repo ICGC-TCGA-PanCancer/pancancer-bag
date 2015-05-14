@@ -1,2 +1,8 @@
 ---
-pancancer_jar: pancancer-arch-3-1.0.0-20150513.201433-2.jar
+pancancer_jar: 1.0.0-SNAPSHOT/pancancer-arch-3-1.0.0-20150514.160551-4.jar
+queueName: seqware
+queueHost: localhost
+queueUser: queue_user
+queuePassword: queue
+hostUser: ubuntu
+

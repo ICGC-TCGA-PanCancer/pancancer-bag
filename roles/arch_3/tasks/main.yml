@@ -3,10 +3,13 @@
   get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/simple/seqware-snapshot/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_jar }} dest=/home/ubuntu/pancancer-arch-3-1.0.0-SNAPSHOT.jar
 
 - name: Get kill-worker script
-  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/feature/solomon_run_worker_as_daemon/pancancer-arch-3/scripts/kill_worker_daemon.sh dest=kill_worker_daemon.sh
+  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/feature/solomon_run_worker_as_daemon/pancancer-arch-3/scripts/kill_worker_daemon.sh dest=/home/ubuntu/kill_worker_daemon.sh
 
 - name: Get run-worker script
-  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/feature/solomon_run_worker_as_daemon/pancancer-arch-3/scripts/run_worker_daemon.sh dest=run_worker_daemon.sh
+  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/feature/solomon_run_worker_as_daemon/pancancer-arch-3/scripts/run_worker_daemon.sh dest=/home/ubuntu/run_worker_daemon.sh
+
+- name: Template workerConfig
+  template: src=../templates/workerConfig.j2 dest=/home/ubuntu/workerConfig.json
 
 - name: Run worker as daemon
   sudo: true

@@ -51,7 +51,7 @@
     - { role: run-helloworld , when: test_workflow }
 
 - hosts: master
-    sudo: True
-    roles:
-      - { roles: arch_3 }
+  sudo: True
+  roles:
+    - { role: arch_3 }
 
