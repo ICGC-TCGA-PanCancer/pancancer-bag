@@ -27,7 +27,7 @@
 
 - name: Copy over aws config
   sudo_user: '{{ user_name }}'
-  template: src=templates/config.j2 dest=/home/{{ user_name }}/.aws/config 
+  template: src=config.j2 dest=/home/{{ user_name }}/.aws/config 
 
 - name: Copy over DKFZ image 
   sudo_user: '{{ user_name }}'
