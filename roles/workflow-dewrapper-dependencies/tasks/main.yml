@@ -22,7 +22,7 @@
   pip: name=awscli
 
 - name: Setup aws config directory
-  sudo_user: '{{ user_name }}'
+  sudo: true
   file: state=directory path=/home/{{ user_name }}/.aws owner={{ user_name }}
 
 - name: Copy over aws config
@@ -54,7 +54,7 @@
   shell: docker load -i /home/{{ user_name }}/dkfz_dockered_workflows_1.0.132-2.tar
   
 - name: Setup datastore
-  sudo_user: '{{ user_name }}'
+  sudo: true
   file: path=~/bundledFiles state=directory owner={{ user_name }}
 
 # Before running unarchive, check the the file isn't already unarchived: the unarchive module will take a very long time to run,
