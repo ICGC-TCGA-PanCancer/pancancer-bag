@@ -23,7 +23,7 @@
 
 - name: Setup aws config directory
   sudo_user: '{{ user_name }}'
-  file: state=directory path=/home/{{ user_name }}/.aws
+  file: state=directory path=/home/{{ user_name }}/.aws owner={{ user_name }}
 
 - name: Copy over aws config
   sudo_user: '{{ user_name }}'
@@ -55,7 +55,7 @@
   
 - name: Setup datastore
   sudo_user: '{{ user_name }}'
-  file: path=~/bundledFiles state=directory
+  file: path=~/bundledFiles state=directory owner={{ user_name }}
 
 # Before running unarchive, check the the file isn't already unarchived: the unarchive module will take a very long time to run,
 # even if the file is already unarchived.
@@ -71,7 +71,7 @@
 
 - name: Create workflows directory
   sudo: yes
-  file: path=/workflows state=directory owner=ubuntu group=ubuntu mode=0777
+  file: path=/workflows state=directory owner={{ user_name }} group=ubuntu mode=0777
 
 - name: check if /datastore already exists
   stat: path=/datastore
@@ -80,7 +80,7 @@
 # This may already exists (created in another playbook), as symlink to /mnt/datastore
 - name: Create datastore directory
   sudo: yes
-  file: path=/datastore state=directory owner=ubuntu group=ubuntu mode=0777
+  file: path=/datastore state=directory owner={{ user_name }} group=ubuntu mode=0777
   when: not datastoreStat.stat.exists
 
 - name: Get Seqware artifact
