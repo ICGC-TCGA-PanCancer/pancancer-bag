@@ -48,15 +48,15 @@
 
 - name: Get docker container seqware_whitestar
   docker:
-    image: seqware/seqware_whitestar
+    image: seqware/seqware_whitestar:1.1.1
 
 - name: Get docker container pcawg-delly-workflow
   docker:
-    image: pancancer/pcawg-delly-workflow
+    image: pancancer/pcawg-delly-workflow:1.0
 
 - name: Get docker container pancancer_upload_download
   docker:
-    image: seqware/pancancer_upload_download
+    image: pancancer/pancancer_upload_download:1.1
 
 - name: Load DKFZ image
   shell: docker load -i /home/{{ user_name }}/dkfz_dockered_workflows.tar
@@ -93,11 +93,11 @@
 
 - name: Get Seqware artifact
   sudo_user: '{{ user_name }}'
-  get_url: dest=~/seqware-distribution-1.1.0-alpha.6-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/1.1.0-alpha.6/seqware-distribution-1.1.0-alpha.6-full.jar
+  get_url: dest=~/seqware-distribution-{{ seqware_version }}-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/{{ seqware_version }}/seqware-distribution-{{ seqware_version }}-full.jar
 
 - name: Unzip DEWrapperWorkflow
   sudo_user: '{{ user_name }}'
-  shell: java -cp ~/seqware-distribution-1.1.0-alpha.6-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
+  shell: java -cp ~/seqware-distribution-{{ seqware_version }}-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0
 
 - name: Get workflow launcher script
   sudo_user: '{{ user_name }}'
