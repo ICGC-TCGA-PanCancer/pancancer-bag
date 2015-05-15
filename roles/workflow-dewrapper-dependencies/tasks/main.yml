@@ -22,20 +22,20 @@
   pip: name=awscli
 
 - name: Setup aws config directory
-  sudo_user: {{ user_name }}
+  sudo_user: '{{ user_name }}'
   file: state=directory path=/home/{{ user_name }}/.aws
 
 - name: Copy over aws config
-  sudo_user: {{ user_name }}
+  sudo_user: '{{ user_name }}'
   template: src=templates/config.j2 dest=/home/{{ user_name }}/.aws/config 
 
 - name: Copy over DKFZ image 
-  sudo_user: {{ user_name }}
+  sudo_user: '{{ user_name }}'
   shell: creates=/home/{{ user_name }}/dkfz_dockered_workflows_1.0.132-2.tar aws s3 cp s3://oicr.docker.private.images/dkfz_dockered_workflows_1.0.132-2.tar /home/{{ user_name }}/dkfz_dockered_workflows_1.0.132-2.tar 
 
   #NOTE: Not sure, but it seems to me that Ansible unarchive module prefers .tgz to .tar.gz
 - name: Copy over bundledFiles supporting DKFZ container
-  sudo_user: {{ user_name }}
+  sudo_user: '{{ user_name }}'
   shell: creates=/home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tgz aws s3 cp s3://oicr.docker.private.images/dkfz-workflow-dependencies_150218_0931.tar.gz /home/{{ user_name }}/dkfz-workflow-dependencies_150218_0931.tgz
 
 - name: Get docker container seqware_whitestar
