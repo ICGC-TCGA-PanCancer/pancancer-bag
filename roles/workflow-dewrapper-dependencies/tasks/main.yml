@@ -55,19 +55,14 @@
   
 - name: Setup bundled files
   sudo: true
-  file: path=/home/ubuntu/bundledFiles state=directory owner=ubuntu
+  file: path=/datastore/DEWorkflowData/dkfz/32749c9f-d8aa-4ff5-b32c-296976aec706/bundledFiles state=directory owner=ubuntu
 
-# Before running unarchive, check the the file isn't already unarchived: the unarchive module will take a very long time to run,
-# even if the file is already unarchived.
+# Before running unarchive, check that a random file in thebundle  isn't already unarchived: the unarchive module will take a very long time to run,
+# even if the file is already unarchived. 
 - name: check if already unarchived
-  stat: path=/home/ubuntu/bundledFiles
+  stat: path=/datastore/DEWorkflowData/dkfz/32749c9f-d8aa-4ff5-b32c-296976aec706/bundledFiles/annovar/annovar_Sept2013/mousedb/mm10_seq/chrUn_GL456394.fa
   sudo_user: 'ubuntu'
   register: bundledFilesStat
- 
-- name: Untar bundledFiles
-  sudo_user: 'ubuntu'
-  unarchive: src=/home/ubuntu/dkfz-workflow-dependencies_150218_0931.tgz dest=/home/ubuntu/bundledFiles copy=no
-  when: not bundledFilesStat.stat.exists
 
 - name: Create workflows directory
   sudo: yes
@@ -82,19 +77,27 @@
   sudo: yes
   file: path=/datastore state=directory owner=ubuntu group=ubuntu mode=0777
   when: not datastoreStat.stat.exists
+  
+- name: Untar bundledFiles
+  sudo_user: 'ubuntu'
+  unarchive: src=/home/ubuntu/dkfz-workflow-dependencies_150218_0931.tgz dest=/datastore/DEWorkflowData/dkfz/32749c9f-d8aa-4ff5-b32c-296976aec706/bundledFiles copy=no
+  when: not bundledFilesStat.stat.exists
 
 - name: Get Seqware artifact
   sudo_user: 'ubuntu'
-  get_url: dest=/home/ubuntu//seqware-distribution-{{ seqware_version }}-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/{{ seqware_version }}/seqware-distribution-{{ seqware_version }}-full.jar
+  get_url: dest=/home/ubuntu/seqware-distribution-{{ seqware_version }}-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/{{ seqware_version }}/seqware-distribution-{{ seqware_version }}-full.jar
+
+- name: Get DEWrapperWorkflow
+  get_url: url=https://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/Workflow_Bundle_DEWrapperWorkflow_{{ dewrapper_workflow_version }}_SeqWare_1.1.0.zip dest=/home/ubuntu/Workflow_Bundle_DEWrapperWorkflow_{{ dewrapper_workflow_version }}_SeqWare_1.1.0.zip
 
 - name: Unzip DEWrapperWorkflow
   sudo_user: 'ubuntu'
-  shell: java -cp /home/ubuntu//seqware-distribution-{{ seqware_version }}-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0
+  shell: java -cp /home/ubuntu/seqware-distribution-{{ seqware_version }}-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip /home/ubuntu/Workflow_Bundle_DEWrapperWorkflow_{{ dewrapper_workflow_version }}_SeqWare_1.1.0.zip --output-dir /workflows/Workflow_Bundle_DEWrapperWorkflow_{{ dewrapper_workflow_version }}_SeqWare_1.1.0 creates=/workflows/Workflow_Bundle_DEWrapperWorkflow_{{ dewrapper_workflow_version }}_SeqWare_1.1.0
 
 - name: Get workflow launcher script
   sudo_user: 'ubuntu'
-  get_url: dest=/home/ubuntu//launchWorkflow.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
+  get_url: dest=/home/ubuntu//launchWorkflow.sh url=https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/DEWrapperWorkflow/{{ dewrapper_workflow_version }}/launchWorkflow.sh
 
 - name: Get workflow launcher script for Whitestar
   sudo_user: 'ubuntu'
-  get_url: dest=/home/ubuntu//launchWorkflowDev.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
+  get_url: dest=/home/ubuntu//launchWorkflowDev.sh url=https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/DEWrapperWorkflow/{{ dewrapper_workflow_version }}/launchWorkflowDev.sh
