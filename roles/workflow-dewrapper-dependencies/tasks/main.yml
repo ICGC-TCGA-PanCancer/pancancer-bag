@@ -53,20 +53,20 @@
 - name: Load DKFZ image
   shell: docker load -i /home/ubuntu/dkfz_dockered_workflows_1.0.132-2.tar
   
-- name: Setup datastore
+- name: Setup bundled files
   sudo: true
-  file: path=~/bundledFiles state=directory owner=ubuntu
+  file: path=/home/ubuntu/bundledFiles state=directory owner=ubuntu
 
 # Before running unarchive, check the the file isn't already unarchived: the unarchive module will take a very long time to run,
 # even if the file is already unarchived.
 - name: check if already unarchived
-  stat: path=~/bundledFiles
+  stat: path=/home/ubuntu/bundledFiles
   sudo_user: 'ubuntu'
   register: bundledFilesStat
  
 - name: Untar bundledFiles
   sudo_user: 'ubuntu'
-  unarchive: src=~/dkfz-workflow-dependencies_150218_0931.tgz dest=~/bundledFiles copy=no
+  unarchive: src=/home/ubuntu/dkfz-workflow-dependencies_150218_0931.tgz dest=/home/ubuntu/bundledFiles copy=no
   when: not bundledFilesStat.stat.exists
 
 - name: Create workflows directory
@@ -85,16 +85,16 @@
 
 - name: Get Seqware artifact
   sudo_user: 'ubuntu'
-  get_url: dest=~/seqware-distribution-{{ seqware_version }}-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/{{ seqware_version }}/seqware-distribution-{{ seqware_version }}-full.jar
+  get_url: dest=/home/ubuntu//seqware-distribution-{{ seqware_version }}-full.jar url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/com/github/seqware/seqware-distribution/{{ seqware_version }}/seqware-distribution-{{ seqware_version }}-full.jar
 
 - name: Unzip DEWrapperWorkflow
   sudo_user: 'ubuntu'
-  shell: java -cp ~/seqware-distribution-{{ seqware_version }}-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0
+  shell: java -cp /home/ubuntu//seqware-distribution-{{ seqware_version }}-full.jar net.sourceforge.seqware.pipeline.tools.UnZip --input-zip Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0.zip --output-dir Workflow_Bundle_DEWrapperWorkflow_1.0.1_SeqWare_1.1.0
 
 - name: Get workflow launcher script
   sudo_user: 'ubuntu'
-  get_url: dest=~/launchWorkflow.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
+  get_url: dest=/home/ubuntu//launchWorkflow.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflow.sh
 
 - name: Get workflow launcher script for Whitestar
   sudo_user: 'ubuntu'
-  get_url: dest=~/launchWorkflowDev.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
+  get_url: dest=/home/ubuntu//launchWorkflowDev.sh url=https://raw.githubusercontent.com/SeqWare/public-workflows/develop/DEWrapperWorkflow/launchWorkflowDev.sh
