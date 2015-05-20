@@ -1,0 +1,3 @@
+---
+  name: Install the Seqware docker container
+  include: ../seqware-bag/install-seqware-container.yml
