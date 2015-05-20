@@ -1,5 +1,5 @@
 ---
-pancancer_jar: 1.0.0/pancancer-arch-3-1.0.0.jar
+pancancer_arch3_version: 1.0.0
 queueName: seqware
 queueHost: localhost
 queueUser: queue_user
