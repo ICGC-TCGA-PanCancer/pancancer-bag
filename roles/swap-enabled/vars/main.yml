@@ -1,4 +1,0 @@
----
-swap_file_path: "/mnt/seqware-oozie/swap_file"
-# To create a 58 GB swap file
-swap_file_size_kb: 58593
