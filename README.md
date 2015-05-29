@@ -29,36 +29,8 @@ technology to use.
     # launch, use the correct command line args for you 
     perl bin/launch_cluster.pl --config=openstack --custom-params=<cluster-name>
 
-
-For provisioning in the Bindle configuration file specify:
-
-    workflows = (comma separated list of workflows to be installed)
-    
-As an example to install BWA and HelloWorld, you require the following:
-
-    install_workflow = True
-    workflow_name = BWA
-    workflows=Workflow_Bundle_BWA_2.6.3_SeqWare_1.1.0-alpha.5,Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0-alpha.5
-
-
 Please see the [PanCancer Wiki](https://wiki.oicr.on.ca/display/PANCANCER) for
 more information about this project.
 
-
 !!! Important !!!
 If running this on EBI or other cloud where large memory instances are not available, enable the "SGE hack" by passing sge_hack and swap_on as variables on the command line or throught the Bindle configuration file.
-
-## For DKFZ/EMBL
-If you are going to run the DKFZ/EMBL workflow, you will need to run the DEWrapperWorkflow playbook. To do this, ensure that you specify `DEWrapper` in your config file:
-
-
-    install_workflow = True
-    workflow_name = DEWrapper
-    workflows=Workflow_Bundle_DEWrapperWorkflow_1.0-SNAPSHOT_SeqWare_1.1.0-rc.1
-
-On your launcher, you must also have valid AWS configuration files as:
-
-    ~/.aws/config
-    ~/.aws/credentials
-
-These files are need by part of the DEWrapper playbook. If you don't have a valid AWS login, the playbook will fail.
