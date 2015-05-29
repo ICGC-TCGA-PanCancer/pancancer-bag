@@ -1,7 +1,0 @@
----
-
-- name: apply qconf h_vmem changes
-  command: sudo qconf -Me /tmp/master.ini
-
-- name: apply qconf complex changes
-  command: sudo qconf -Mc /tmp/complex
